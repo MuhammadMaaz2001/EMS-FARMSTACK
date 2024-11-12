@@ -1,10 +1,16 @@
+from datetime import datetime, timedelta
+
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from pymongo import MongoClient
 from typing import Optional
 from fastapi.middleware.cors import CORSMiddleware
+import jwt
 
 app = FastAPI()
+
+SECRET_KEY = "ahsanahmedkhan"  # Replace this with a strong secret key
+ALGORITHM = "HS256"
 
 # New Test Branch
 
@@ -99,3 +105,25 @@ async def delete_employee(email: str):
         return {"result": "Data deleted successfully"}
     else:
         raise HTTPException(status_code=404, detail="Employee not found")
+
+class Login(BaseModel):
+    email: str
+    password : str
+
+
+@app.post("/login")
+async def login(login : Login):
+    user = user_collection.find_one({
+        "email" : login.email,
+        "password" : login.password
+    })
+    if user:
+        token_data = {
+            "sub": user["email"],
+            "exp": datetime.utcnow() + timedelta(hours=1)  # Token expiry time (e.g., 1 hour)
+        }
+        token = jwt.encode(token_data, SECRET_KEY, algorithm=ALGORITHM)
+
+        return {"access_token": token, "token_type": "bearer"}
+    else:
+        raise HTTPException(status_code=401, detail="Invalid credentials")
