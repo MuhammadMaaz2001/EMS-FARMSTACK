@@ -1,13 +1,22 @@
-// apiService.js
 import axios from 'axios';
-
-const API_BASE_URL = "http://localhost:8000";  // Replace with your backend URL
 
 export const loginUser = async (email, password) => {
   try {
-    const response = await axios.post(`${API_BASE_URL}/login`, { email, password });
+    // Create a new FormData object and append the email and password fields
+    const formData = new FormData();
+    formData.append('email', email);
+    formData.append('password', password);
+
+    // Send the POST request with form data and set Content-Type to 'multipart/form-data'
+    const response = await axios.post('http://localhost:8000/login', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+
     return response.data;
   } catch (error) {
+    console.error("Login error:", error.response?.data);
     throw error.response ? error.response.data : { detail: "An error occurred" };
   }
 };

@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, Form, HTTPException
+
 from pydantic import BaseModel
 from pymongo import MongoClient
 from typing import Optional
@@ -109,10 +110,11 @@ async def delete_employee(email: str):
 
 
 @app.post("/login")
-async def login(email:str, password:str):
+async def login(email: str = Form(...), password: str = Form(...)):
+    # Validate and fetch the user from your database
     user = user_login_collection.find_one({
-        "email" : email,
-        "password" : password
+        "email": email,
+        "password": password
     })
     if user:
         token_data = {
@@ -120,7 +122,6 @@ async def login(email:str, password:str):
             "exp": datetime.utcnow() + timedelta(hours=1)  # Token expiry time (e.g., 1 hour)
         }
         token = jwt.encode(token_data, SECRET_KEY, algorithm=ALGORITHM)
-
         return {"access_token": token, "token_type": "bearer"}
     else:
         raise HTTPException(status_code=401, detail="Invalid credentials")
