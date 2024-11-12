@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, Form, HTTPException
+
 from pydantic import BaseModel
 from pymongo import MongoClient
 from typing import Optional
@@ -125,7 +126,6 @@ async def login(login : Login):
             "exp": datetime.utcnow() + timedelta(hours=1)  # Token expiry time (e.g., 1 hour)
         }
         token = jwt.encode(token_data, SECRET_KEY, algorithm=ALGORITHM)
-
         return {"access_token": token, "token_type": "bearer"}
     else:
         raise HTTPException(status_code=401, detail="Invalid credentials")
