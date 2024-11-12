@@ -2,7 +2,7 @@ from jose import JWTError, jwt
 
 from fastapi import HTTPException, status
 
-def verify_token(token: str):
+def verify_token(token: str, SECRET_KEY : str, ALGORITHM : str):
     try:
         # Decode the token using the secret key and algorithm
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])

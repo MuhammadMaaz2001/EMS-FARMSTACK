@@ -133,12 +133,12 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 @app.get("/api/validate-token")
 async def validate_token(token: str = Depends(oauth2_scheme)):
-    payload = verify_token(token)  # Call the verify_token function
+    payload = verify_token(token, SECRET_KEY, ALGORITHM)  # Call the verify_token function
     return {"isValid": True}  # If no exception is raised, the token is valid
 
 
 # Sample route protected by JWT token
 @app.get("/secure-data")
 async def get_secure_data(token: str = Depends(oauth2_scheme)):
-    payload = verify_token(token)  # Token validation
+    payload = verify_token(token, SECRET_KEY, ALGORITHM)  # Token validation
     return {"message": "This is protected data!", "user_data": payload}
