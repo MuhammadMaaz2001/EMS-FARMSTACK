@@ -1,7 +1,7 @@
 // api.js
 import axios from "axios";
 
-const API_BASE_URL = "http://localhost:8000";  // Replace with your FastAPI base URL
+const API_BASE_URL = "http://192.168.23.109:8000";  // Replace with your FastAPI base URL
 
 // Function to fetch all employee data
 export const fetchAllEmployees = async () => {
