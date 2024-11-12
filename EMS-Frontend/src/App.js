@@ -10,6 +10,7 @@ export default function App() {
     <BrowserRouter>
     <div className="flex">
       <SideBar />
+      <Routes></Routes>
       <div className="ml-26 flex-1 p-4">
       <Routes>
         <Route path="/" element={<HomePage />} />

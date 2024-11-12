@@ -15,7 +15,7 @@ const AllRoutes = () => {
       <Route path="/read" element={<Read />} />
       <Route path="/update" element={<Update />} />
       <Route path="/delete" element={<Deletefile />} />
-      <Route path="/login" element={<LoginPage /> } />
+      {/*<Route path="/login" element={<LoginPage /> } />*/}
     </Routes>
   );
 };
