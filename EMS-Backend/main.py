@@ -110,6 +110,7 @@ class Login(BaseModel):
     email: str
     password : str
 
+
 @app.post("/login")
 async def login(login : Login):
     user = user_collection.find_one({
