@@ -9,24 +9,31 @@ const LoginPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
     try {
       const data = await loginUser(email, password);
       setMessage("Login successful!");
       setMessageType("success");
       localStorage.setItem("token", data.access_token);
-
+  
       // Hide the message after 3 seconds
       setTimeout(() => setMessage(null), 3000);
     } catch (error) {
-      setMessage(error.detail || "Login failed!");
+      const errorDetail = error.detail;
+      
+      // Check if errorDetail is an array and format it into a string for display
+      const errorMessage = Array.isArray(errorDetail)
+        ? errorDetail.map((err) => err.msg).join(", ")
+        : errorDetail || "Login failed!";
+  
+      setMessage(errorMessage);
       setMessageType("error");
-
+  
       // Hide the error message after 3 seconds
       setTimeout(() => setMessage(null), 3000);
     }
   };
-
+  
   return (
     <div className="h-full flex items-center justify-center mt-[4vmax] ">
       <div className="border border-zinc-700 rounded-xl p-7 bg-zinc-400 shadow-lg">
