@@ -109,12 +109,16 @@ async def delete_employee(email: str):
         raise HTTPException(status_code=404, detail="Employee not found")
 
 
+class Login(BaseModel):
+    email : str
+    password : str
+
+
 @app.post("/login")
-async def login(email: str = Form(...), password: str = Form(...)):
-    # Validate and fetch the user from your database
+async def login(login : Login):
     user = user_login_collection.find_one({
-        "email": email,
-        "password": password
+        "email" : login.email,
+        "password" : login.password
     })
     if user:
         token_data = {
