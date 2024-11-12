@@ -1,5 +1,5 @@
 import axios from 'axios';
-
+const API_BASE_URL = "http://localhost:8000"
 export const loginUser = async (email, password) => {
   try {
     // Create a new FormData object and append the email and password fields
@@ -8,7 +8,7 @@ export const loginUser = async (email, password) => {
     formData.append('password', password);
 
     // Send the POST request with form data and set Content-Type to 'multipart/form-data'
-    const response = await axios.post('http://localhost:8000/login', formData, {
+    const response = await axios.post(`${API_BASE_URL}/login`, formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
