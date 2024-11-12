@@ -1,12 +1,15 @@
 from datetime import datetime, timedelta
 
-from fastapi import FastAPI, Form, HTTPException
-
+from fastapi import FastAPI, Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordBearer
+from jose import JWTError, jwt
+from typing import List, Optional
 from pydantic import BaseModel
 from pymongo import MongoClient
-from typing import Optional
-from fastapi.middleware.cors import CORSMiddleware
-import jwt
+from starlette.middleware.cors import CORSMiddleware
+
+from auth.Auth import verify_token  # Import the verify_token function
+
 
 app = FastAPI()
 
@@ -109,16 +112,12 @@ async def delete_employee(email: str):
         raise HTTPException(status_code=404, detail="Employee not found")
 
 
-class Login(BaseModel):
-    email : str
-    password : str
-
-
 @app.post("/login")
-async def login(login : Login):
+async def login(email: str = Form(...), password: str = Form(...)):
+    # Validate and fetch the user from your database
     user = user_login_collection.find_one({
-        "email" : login.email,
-        "password" : login.password
+        "email": email,
+        "password": password
     })
     if user:
         token_data = {
@@ -129,3 +128,17 @@ async def login(login : Login):
         return {"access_token": token, "token_type": "bearer"}
     else:
         raise HTTPException(status_code=401, detail="Invalid credentials")
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+
+@app.get("/api/validate-token")
+async def validate_token(token: str = Depends(oauth2_scheme)):
+    payload = verify_token(token, SECRET_KEY, ALGORITHM)  # Call the verify_token function
+    return {"isValid": True}  # If no exception is raised, the token is valid
+
+
+# Sample route protected by JWT token
+@app.get("/secure-data")
+async def get_secure_data(token: str = Depends(oauth2_scheme)):
+    payload = verify_token(token, SECRET_KEY, ALGORITHM)  # Token validation
+    return {"message": "This is protected data!", "user_data": payload}
