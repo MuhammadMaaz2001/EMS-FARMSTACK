@@ -1,8 +1,7 @@
 from jose import JWTError, jwt
-from datetime import datetime, timedelta
-from typing import Optional
+
 from fastapi import HTTPException, status
-from pydantic import BaseModel
+
 def verify_token(token: str):
     try:
         # Decode the token using the secret key and algorithm
