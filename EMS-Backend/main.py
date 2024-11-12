@@ -33,6 +33,7 @@ app.add_middleware(
 client = MongoClient("mongodb://localhost:27017")  # Use your MongoDB URI
 db = client.Emsdata  # Replace with your database name
 user_collection = db.employees  # Collection name for employees
+user_login_collection = db.login
 
 # Pydantic model for Employee
 class Employees(BaseModel):
@@ -106,16 +107,12 @@ async def delete_employee(email: str):
     else:
         raise HTTPException(status_code=404, detail="Employee not found")
 
-class Login(BaseModel):
-    email: str
-    password : str
-
 
 @app.post("/login")
-async def login(login : Login):
-    user = user_collection.find_one({
-        "email" : login.email,
-        "password" : login.password
+async def login(email:str, password:str):
+    user = user_login_collection.find_one({
+        "email" : email,
+        "password" : password
     })
     if user:
         token_data = {
