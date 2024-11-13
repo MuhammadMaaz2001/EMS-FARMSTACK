@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 
-from fastapi import FastAPI, Depends, HTTPException, status
+from fastapi import FastAPI, Form, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
 from typing import List, Optional
@@ -9,7 +9,6 @@ from pymongo import MongoClient
 from starlette.middleware.cors import CORSMiddleware
 
 from auth.Auth import verify_token  # Import the verify_token function
-
 
 app = FastAPI()
 
@@ -29,8 +28,8 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,  # Allow specific origins
     allow_credentials=True,
-    allow_methods=["*"],     # Allow all methods (GET, POST, etc.)
-    allow_headers=["*"],     # Allow all headers
+    allow_methods=["*"],  # Allow all methods (GET, POST, etc.)
+    allow_headers=["*"],  # Allow all headers
 )
 
 # MongoDB setup
@@ -39,6 +38,7 @@ db = client.Emsdata  # Replace with your database name
 user_collection = db.employees  # Collection name for employees
 user_login_collection = db.login
 
+
 # Pydantic model for Employee
 class Employees(BaseModel):
     id: Optional[str] = None
@@ -46,6 +46,7 @@ class Employees(BaseModel):
     email: str
     responsibility: str
     additional_information: str
+
 
 # Helper to convert MongoDB ObjectId to string
 def employee_helper(employee) -> dict:
@@ -57,6 +58,7 @@ def employee_helper(employee) -> dict:
         "additional_information": employee["additional_information"]
     }
 
+
 # Create employee endpoint
 @app.post("/create_employee/")
 async def create_employee(employee_data: Employees):
@@ -65,10 +67,12 @@ async def create_employee(employee_data: Employees):
         raise HTTPException(status_code=400, detail="Email already registered")
 
     # Insert new employee into the MongoDB collection
-    result = user_collection.insert_one(employee_data.dict(exclude_unset=True))  # exclude_unset to avoid saving None values
+    result = user_collection.insert_one(
+        employee_data.dict(exclude_unset=True))  # exclude_unset to avoid saving None values
     created_employee = user_collection.find_one({"_id": result.inserted_id})
 
     return {"status": "Employee created successfully", "employee": employee_helper(created_employee)}
+
 
 # Read employee by email
 @app.get("/read_all/")
@@ -87,6 +91,7 @@ class UpdateEmployee(BaseModel):
     responsibility: Optional[str] = None
     additional_information: Optional[str] = None
 
+
 @app.put("/update/{email}")
 async def update_employee(email: str, update_data: UpdateEmployee):
     if user_collection.find_one({"email": email}):
@@ -101,6 +106,7 @@ async def update_employee(email: str, update_data: UpdateEmployee):
         }
     else:
         raise HTTPException(status_code=404, detail="Employee not found")
+
 
 # Delete employee by email
 @app.delete("/delete/{email}")
@@ -129,16 +135,18 @@ async def login(email: str = Form(...), password: str = Form(...)):
     else:
         raise HTTPException(status_code=401, detail="Invalid credentials")
 
+
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+
 
 @app.get("/api/validate-token")
 async def validate_token(token: str = Depends(oauth2_scheme)):
-    payload = verify_token(token)  # Call the verify_token function
+    payload = verify_token(token, SECRET_KEY, ALGORITHM)  # Call the verify_token function
     return {"isValid": True}  # If no exception is raised, the token is valid
 
 
 # Sample route protected by JWT token
 @app.get("/secure-data")
 async def get_secure_data(token: str = Depends(oauth2_scheme)):
-    payload = verify_token(token)  # Token validation
+    payload = verify_token(token, SECRET_KEY, ALGORITHM)  # Token validation
     return {"message": "This is protected data!", "user_data": payload}

@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = "http://192.168.23.109:8000"; // Update this if your FastAPI server is hosted elsewhere
+const API_BASE_URL = "http://localhost:8000"; // Update this if your FastAPI server is hosted elsewhere
 
 export const createEmployee = async (employeeData) => {
   try {
