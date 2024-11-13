@@ -18,20 +18,28 @@ function App() {
                     const isValid = await validateToken(token);
                     if (!isValid) {
                         localStorage.removeItem("token"); // Remove invalid token
-                        navigate("/login"); // Redirect to login if token is invalid
+                        if (location.pathname !== "/login") {
+                            navigate("/login"); // Redirect to login if token is invalid and not already on login page
+                        }
+                    } else if (location.pathname === "/login" || location.pathname === "/Login") {
+                        // Redirect to home page if on login page and token is valid
+                        navigate("/");
                     }
                 } catch (error) {
                     console.error("Token validation error:", error);
                     localStorage.removeItem("token");
-                    navigate("/login");
+                    if (location.pathname !== "/login") {
+                        navigate("/login");
+                    }
                 }
-            } else {
+            } else if (location.pathname !== "/login") {
+                // Redirect to login if no token exists and not already on login page
                 navigate("/login");
             }
         };
 
         checkToken();
-    }, [navigate]);
+    }, [navigate, location.pathname]);
 
     return (
         <div className="flex">

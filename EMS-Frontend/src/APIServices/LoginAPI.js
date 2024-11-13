@@ -8,7 +8,7 @@ export const loginUser = async (email, password) => {
     formData.append('password', password);
 
     // Send the POST request with form data and set Content-Type to 'multipart/form-data'
-    const response = await axios.post("http://192.168.23.109:8000/login", formData, {
+    const response = await axios.post("http://localhost:8000/login", formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },

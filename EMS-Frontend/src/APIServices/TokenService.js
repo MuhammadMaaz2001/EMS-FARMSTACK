@@ -4,7 +4,7 @@ import axios from "axios";
 
 export const validateToken = async (token) => {
     try {
-        const response = await axios.get("/api/validate-token", {
+        const response = await axios.get("http://localhost:8000/api/validate-token", {
             headers: {
                 Authorization: `Bearer ${token}`,
             },
