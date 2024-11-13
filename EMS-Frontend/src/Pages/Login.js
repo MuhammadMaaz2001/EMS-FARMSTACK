@@ -1,23 +1,27 @@
 import React, { useState } from "react";
 import { loginUser } from "../APIServices/LoginAPI";
+import {useNavigate} from "react-router-dom";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState(null);
-  const [messageType, setMessageType] = useState(""); 
+  const [messageType, setMessageType] = useState("");
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
     try {
       const data = await loginUser(email, password);
       setMessage("Login successful!");
       setMessageType("success");
       localStorage.setItem("token", data.access_token);
-  
+
+
       // Hide the message after 3 seconds
       setTimeout(() => setMessage(null), 3000);
+      setTimeout(()=> navigate("/"), 3000)
     } catch (error) {
       const errorDetail = error.detail;
       

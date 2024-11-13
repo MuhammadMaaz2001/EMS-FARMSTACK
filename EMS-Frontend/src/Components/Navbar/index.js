@@ -29,7 +29,7 @@ function SideBar() {
     <>
       <button
   ref={buttonRef}
-  className="fixed top-3 left-6 focus:outline-none z-50 text-2xl text-white border rounded-lg p-2"
+  className="fixed top-2.5 left-6 focus:outline-none z-50 text-2xl text-white border rounded-lg p-2"
   onClick={() => setIsOpen(!isOpen)}
 >
   <CiMenuBurger />
